@@ -1,3 +1,7 @@
 {
-  "extends": ["plugin:jest/recommended", "eslint:recommended", "next/core-web-vitals"]
+  "extends": [
+    "plugin:jest/recommended",
+    "eslint:recommended",
+    "next/core-web-vitals"
+  ]
 }
