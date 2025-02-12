@@ -23,26 +23,34 @@ export default function StatusPage() {
     <>
       <h1>Status</h1>
       <UpdatedAt timestamp={data?.updated_at} />
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <DatabaseStatus
-          version={database?.version}
-          maxConnections={database?.max_connections}
-          openedConnections={database?.opened_connections}
-        />
-      )}
+      <DatabaseStatus
+        isLoading={isLoading}
+        version={database?.version}
+        maxConnections={database?.max_connections}
+        openedConnections={database?.opened_connections}
+      />
     </>
   );
 }
 
-function DatabaseStatus({ version, maxConnections, openedConnections }) {
+function DatabaseStatus({
+  isLoading,
+  version,
+  maxConnections,
+  openedConnections,
+}) {
   return (
     <>
-      <h1>Database</h1>
-      <div>Version: {version}</div>
-      <div>Opened connections: {openedConnections}</div>
-      <div>Maximum connections: {maxConnections}</div>
+      <h2>Database</h2>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <div>Version: {version}</div>
+          <div>Opened connections: {openedConnections}</div>
+          <div>Maximum connections: {maxConnections}</div>
+        </>
+      )}
     </>
   );
 }
