@@ -1,14 +1,19 @@
 import { Client } from "pg";
+import { ServiceError } from "infra/errors";
 
 async function query(queryObject) {
   let client;
+
   try {
     client = await getNewClient();
     return await client.query(queryObject);
-  } catch (err) {
-    console.log("\n Error inside database catch");
-    console.error(err);
-    throw err;
+  } catch (error) {
+    const serviceErrorObject = new ServiceError({
+      message: "Connection or query build error.",
+      cause: error,
+    });
+
+    throw serviceErrorObject;
   } finally {
     await client?.end();
   }
