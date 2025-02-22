@@ -12,7 +12,7 @@ async function runMigrations({ dryRun } = { dryRun: true }) {
       dryRun,
       dir: resolve("infra", "migrations"),
       direction: "up",
-      verbose: true,
+      log: () => {},
       migrationsTable: "pgmigrations",
     });
   } catch (error) {
