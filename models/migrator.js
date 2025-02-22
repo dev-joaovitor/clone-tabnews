@@ -1,48 +1,38 @@
 import migrationRunner from "node-pg-migrate";
-import { resolve } from "node:path";
 import database from "infra/database";
+import { resolve } from "node:path";
+import { ServiceError } from "infra/errors";
 
-const defaultMigrationsOptions = {
-  dryRun: true,
-  dir: resolve("infra", "migrations"),
-  direction: "up",
-  verbose: true,
-  migrationsTable: "pgmigrations",
-};
-
-async function listPendingMigrations() {
-  let dbClient;
+async function runMigrations({ dryRun } = { dryRun: true }) {
+  const dbClient = await database.getNewClient();
 
   try {
-    dbClient = await database.getNewClient();
-
-    const pendingMigrations = await migrationRunner({
-      ...defaultMigrationsOptions,
+    return await migrationRunner({
       dbClient,
+      dryRun,
+      dir: resolve("infra", "migrations"),
+      direction: "up",
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    });
+  } catch (error) {
+    const serviceErrorObject = new ServiceError({
+      message: "Migration runner failed.",
+      cause: error,
     });
 
-    return pendingMigrations;
+    throw serviceErrorObject;
   } finally {
     await dbClient?.end();
   }
 }
 
-async function runPendingMigrations() {
-  let dbClient;
+function listPendingMigrations() {
+  return runMigrations({ dryRun: true });
+}
 
-  try {
-    dbClient = await database.getNewClient();
-
-    const migratedMigrations = await migrationRunner({
-      ...defaultMigrationsOptions,
-      dbClient,
-      dryRun: false,
-    });
-
-    return migratedMigrations;
-  } finally {
-    await dbClient?.end();
-  }
+function runPendingMigrations() {
+  return runMigrations({ dryRun: false });
 }
 
 const migrator = {
