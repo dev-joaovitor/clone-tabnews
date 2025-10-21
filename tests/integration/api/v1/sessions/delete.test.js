@@ -63,6 +63,17 @@ describe("DELETE /api/v1/sessions", () => {
         action: "Check if the user is authenticated and try again.",
         status_code: 401,
       });
+
+      // Set-Cookie assertions
+      const parsedSetCookie = setCookieParser(response, { map: true });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
+      });
     });
 
     test("With valid session", async () => {
