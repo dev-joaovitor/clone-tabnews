@@ -55,9 +55,10 @@ describe("GET /api/v1/user", () => {
       expect(renewedCreatedSession.expires_at > createdSession.expires_at).toBe(
         true,
       );
-      expect(renewedCreatedSession.updated_at > createdSession.updated_at).toBe(
-        true,
-      );
+      expect(
+        new Date(renewedCreatedSession.updated_at) >
+          new Date(createdSession.updated_at),
+      ).toBe(true);
 
       // Set-Cookie assertions
       const parsedSetCookie = setCookieParser(response, { map: true });
